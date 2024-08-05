@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat App</title>
+    <style>
+        #chat {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+        #chat li {
+        padding: 8px;
+        margin-bottom: 10px;
+        background-color: #f1f1f1;
+        }
+        #users {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>Chat App</h1>
+    <div>
+        <input id="nicknameInput" placeholder="Enter your nickname" />
+        <button id="setNicknameButton">Set Nickname</button>
+    </div>
+    <ul id="chat"></ul>
+    <input id="messageInput" placeholder="Type a message" />
+    <button id="sendMessageButton">Send</button>
+    <div id="typing"></div>
+    <h2>Online Users</h2>
+    <ul id="users"></ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const nicknameInput = document.getElementById('nicknameInput');
+        const setNicknameButton = document.getElementById('setNicknameButton');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageButton = document.getElementById('sendMessageButton');
+        const chat = document.getElementById('chat');
+        const typing = document.getElementById('typing');
+        const users = document.getElementById('users');
+
+        let nickname = '';
+
+        setNicknameButton.addEventListener('click', () => {
+        nickname = nicknameInput.value;
+        socket.emit('setNickname', nickname);
+        });
+
+        sendMessageButton.addEventListener('click', () => {
+        const message = messageInput.value;
+        appendMessage({ message, nickname });
+        socket.emit('sendMessage', message);
+        messageInput.value = '';
+        });
+
+        messageInput.addEventListener('input', () => {
+        socket.emit('typing', messageInput.value.length > 0);
+        });
+
+        socket.on('receiveMessage', ({ message, nickname }) => {
+        appendMessage({ message, nickname });
+        });
+
+        socket.on('userConnected', (nickname) => {
+        appendNotification(`${nickname} connected`);
+        });
+
+        socket.on('userDisconnected', (nickname) => {
+        appendNotification(`${nickname} disconnected`);
+        });
+
+        socket.on('typing', ({ nickname, isTyping }) => {
+        typing.textContent = isTyping ? `${nickname} is typing...` : '';
+        });
+
+        socket.on('onlineUsers', (onlineUsers) => {
+        users.innerHTML = '';
+        onlineUsers.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = user;
+            users.appendChild(li);
+        });
+        });
+
+        function appendMessage({ message, nickname }) {
+        const li = document.createElement('li');
+        li.textContent = `${nickname}: ${message}`;
+        chat.appendChild(li);
+        }
+
+        function appendNotification(message) {
+        const li = document.createElement('li');
+        li.textContent = message;
+        li.style.fontStyle = 'italic';
+        chat.appendChild(li);
+        }
+    </script>
+</body>
+</html>
