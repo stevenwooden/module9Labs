@@ -1,17 +1,17 @@
 
 const express = require('express');
 let dbConnect = require("./dbConnect");
-const db = require('./models');
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoutes');
+let userRoute = require('./routes/userRoute');
+let commentRoute = require('./routes/commentRoute');
+let postRoute = require('./routes/postRoute');
+let likesRoute = require('./routes/likesRoute');
+
 
 const app = express();
 
-app.use('/api', userRoutes);
-app.use('/api', postRoutes);
 
-db.sequelize.sync().then(() => {
-  app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-  });
-});
+app.use('/api/user', userRoute);
+app.use('/api/post', postRoute);
+app.use('/api/likes', likesRoute);
+app.use('/api/comment', commentRoute);
+

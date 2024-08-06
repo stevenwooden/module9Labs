@@ -1,11 +1,23 @@
-const db = require('../models');
-const User = db.User;
-
-exports.createUser = async (req, res) => {
-    try {
-        const user = await User.create(req.body);
-        res.status(201).json(user);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+"use strict";
+const Models = require('../model')
+// finds all users in DB, then sends array as response
+const getUser = (res) => {
+Models.User.findAll({}).then(data => {
+res.send({result: 200 , data: data});
+}).catch(err => {
+console.log(err);
+res.send({ result: 500, error: err.message });
+})
+}
+// uses JSON from request body to create new user in DB
+const createUser = (data, res) => {
+Models.User.create(data).then(data => {
+res.send({ result: 200 , data: data});
+}).catch(err => {
+console.log(err);
+res.send({ result: 500, error: err.message });
+})
+}
+module.exports = {
+getUser, createUser
+}

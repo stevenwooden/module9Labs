@@ -1,5 +1,11 @@
 'use strict';
 const { Sequelize } = require('sequelize');
+require ('dotenv').config();
+
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+console.log('DB_HOST:', process.env.DB_HOST);
 // Sequelize is a package that abstracts out the need to write
 // SQL queries, relying instead on their models to do it for you
 const sequelize = new Sequelize(process.env.DB_NAME,

@@ -1,19 +1,32 @@
-module.exports = (sequelize, DataTypes) => {
-    const Post = sequelize.define('Post', {
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false
+const {DataTypes, Model} = require("sequelize");
+let dbConnect = require("../dbConnect");
+
+const sequelizeInstance = dbConnect.Sequelize;
+
+class Post extends Model {}
+
+Post.init({
+    postId: {
+        type: DataTypes.INTEGER, allowNull: false, autoIncrement:
+        true, primaryKey: true
         },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: false
+    
+    userID: {
+        type: DataTypes.INTEGER, allowNull: false, required: true, foreignKey:true,
+        unique: true
         },
-        image: {
-            type: DataTypes.STRING,
-            allowNull: true
-        }
-        }, {
-        timestamps: true
-        });
-        return Post;
-    };
+    title: {
+        type:DataTypes.STRING, allowNull: false, required: true
+    },
+    description: {
+        type:DataTypes.STRING, allowNull: false, required: true
+    },
+    imageUrl: {
+        type:DataTypes.STRING, allowNull: false, required: true
+    }
+        },
+        {
+        sequelize: sequelizeInstance, modelName: 'user',
+        timestamps: true, freezeTableName: true
+})
+module.exports = Post

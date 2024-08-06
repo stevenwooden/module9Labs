@@ -1,31 +1,23 @@
-const db = require('../models');
-const Post = db.Post;
-const Like = db.Like;
-const Comment = db.Comment;
-
-exports.createPost = async (req, res) => {
-    try {
-        const post = await Post.create(req.body);
-        res.status(201).json(post);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-    };
-
-    exports.likePost = async (req, res) => {
-    try {
-        const like = await Like.create({ PostId: req.params.id, UserId: req.body.UserId });
-        res.status(201).json(like);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-    };
-
-    exports.commentPost = async (req, res) => {
-    try {
-        const comment = await Comment.create({ ...req.body, PostId: req.params.id });
-        res.status(201).json(comment);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+"use strict";
+const Models = require('../model')
+// finds all users in DB, then sends array as response
+const getPost = (res) => {
+Models.Post.findAll({}).then(data => {
+res.send({result: 200 , data: data});
+}).catch(err => {
+console.log(err);
+res.send({ result: 500, error: err.message });
+})
+}
+// uses JSON from request body to create new user in DB
+const createPost = (data, res) => {
+Models.Post.create(data).then(data => {
+res.send({ result: 200 , data: data});
+}).catch(err => {
+console.log(err);
+res.send({ result: 500, error: err.message });
+})
+}
+module.exports = {
+getPost, createPost
+}
